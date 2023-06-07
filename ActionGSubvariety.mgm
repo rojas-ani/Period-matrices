@@ -1,4 +1,4 @@
-// version 06-06-23
+// version 07-06-23
 
 forward FormSimplCan, InducedPolarization, PH, RestrictedRepresentation;
 
@@ -148,6 +148,17 @@ Jind,P:=FrobeniusFormAlternating(MatrixAlgebra(Integers(),Rank(Pola))!Pola);
 bN:=P*B;
 
 return bN, Jind;
+end function;
+
+InducedPolarizationType:=function(e)
+
+nH:=Rank(e);
+nH2:=Floor(nH/2);
+bN,M:=InducedPolarization(e);
+pol:=[M[j][nH2+j]:j in [1..nH2]];
+
+return pol;
+
 end function;
 
 
