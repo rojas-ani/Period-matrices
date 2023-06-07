@@ -111,9 +111,22 @@ return rec<fis|bN:=BN,Jind:=Jind,LH:=Lchica>;
 end function;
 
 
+Subvariety:=function(ph,A2)
+
+phch:=RestrictedRepresentation([Transpose(ph)],ChangeRing(A2`bN,Rationals()));
+bbb:=BasisMatrix(PureLattice(Lattice(Transpose(phch[1]))));
+JJ:=bbb*A2`Jind*Transpose(bbb);
+Jind,P:=FrobeniusFormAlternating(MatrixAlgebra(Integers(),Rank(JJ))!JJ);
+bN:=P*bbb;
+Jtype:=[Jind[j][Floor(Rank(bbb)/2)+j]:j in [1..Floor(Rank(bbb)/2)]];
+
+fis:=recformat<bN:ModMatRngElt,Jind:AlgMatElt,Jtype:SeqEnum>;
+return rec<fis|bN:=bN,Jind:=Jind,Jtype:=Jtype>;
+
+end function;
+
 
 ActionGSubJacobian:=function(L,H) //L list of symplectic generators of G, H a subgroup of G (symplectic).
-
 
 pH:=PH(H);
 BN,JInd:=InducedPolarization(pH);
@@ -136,6 +149,7 @@ phT:=Transpose(ph);
 return phT;
 end function;
 
+
 InducedPolarization:=function(e) // idempotent represented symplectic
 
 nH:=NumberOfRows(e);
@@ -149,6 +163,7 @@ bN:=P*B;
 
 return bN, Jind;
 end function;
+
 
 InducedPolarizationType:=function(e)
 
@@ -169,6 +184,7 @@ return Jz;
 
 end function;
 
+
 RestrictedRepresentation:=function(L,BN) //L is expected to be a symplectic set of generators for G and BN a symplectic basis for a G-subvariety
 
 Lrho:=[x*Transpose(BN): x in L];
@@ -178,3 +194,20 @@ Lcht:=[Transpose(x): x in Lch];
 
 return Lcht;
 end function; 
+
+RepPerm:=function(G)
+
+L:=[k`subgroup:k in Subgroups(G)|Order(Core(G,k`subgroup))eq 1];
+Gp:=Image(CosetAction(G,L[#L]));
+return Gp;
+
+end function;
+
+InducedRepByTrivial:=function(G,HH,tb)
+
+rho:=[PermutationCharacter(G,x):x in HH];
+desc:=[[InnerProduct(y,x): x in tb]: y in rho];
+
+return desc;
+
+end function;
