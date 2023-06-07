@@ -119,7 +119,7 @@ pH:=PH(H);
 BN,JInd:=InducedPolarization(pH);
 Lchica:= RestrictedRepresentation(L,BN);
 fis:=recformat<ph:AlgMatElt,bN:ModMatRngElt,Jind:AlgMatElt,LH:SeqEnum>;
-print "A=f^*J(X/H) being a G-subvariety. Output: ph:Idempotent for A, bN: coordinates symplectic basis lattice of A, Jind: induced polarization on A, LH: action of G restricted to A";
+print "A=Im p_H being a G-subvariety. Output: ph:Idempotent for A, bN: coordinates symplectic basis lattice of A, Jind: induced polarization on A, LH: action of G restricted to A";
 return rec<fis|ph:=pH,bN:=BN,Jind:=JInd,LH:=Lchica>;
 
 end function;
