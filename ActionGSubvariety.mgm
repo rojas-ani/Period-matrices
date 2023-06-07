@@ -1,0 +1,169 @@
+// version 06-06-23
+
+forward FormSimplCan, InducedPolarization, PH, RestrictedRepresentation;
+
+IsotypicalFactor:=function(G,tb,rep)
+
+n:=NumberOfRows(Identity(G));
+Th:=tb[rep];
+A:=GroupAlgebra(Rationals(),G: Rep:="Vector");
+rho:=&+GaloisOrbit(Th);
+e:=&+[elt<A|(Th[1]/#G)*rho(x^-1),x>:x in G];
+c:=Coefficients(e);
+b:=Basis(A);
+UU:=MatrixAlgebra(Rationals(),n);
+buu:=[G!x: x in b];
+ew:=&+[UU!(c[i]*UU!buu[i]):i in [1.. #G]];
+r:=Rank(ew);
+ewt:=Transpose(ew);
+r2:=Floor(r/2);
+schur:=SchurIndex(Th);
+dimB:=Floor(r2*schur/Th[1]);
+
+form:=recformat<dimA:RngIntElt,dimB:RngIntElt,Idemp:AlgMatElt,IdxSchurRep:RngIntElt>;
+
+print "\n";
+print "You got the following information:\n";
+print "dimA: Dimension of the isotypical factor,\n";
+print "dimB: Dimension of the primitive factor,\n";
+print "Idemp: Central idempotent, represented in the symplectic basis of A,\n";
+print "IdxSchurRep: Schur index of the cpx. irr. Rep., \n";
+print "\n";
+
+return rec<form|dimA:=r2,dimB:=dimB,Idemp:=ewt,IdxSchurRep:=schur>;
+
+end function;
+
+
+IsotypicalFactorAll:=function(G)// G expected to be a finite symplectic group
+
+n:=NumberOfRows(Identity(G));
+tb:=CharacterTable(G);
+A:=GroupAlgebra(Rationals(),G: Rep:="Vector");
+rtb:=[];
+rtb[1]:=tb[1];
+dd:=[];
+dd[1]:=1;
+co:=2;
+
+for i in [1..#tb] do
+	if tb[i] notin &cat[GaloisOrbit(x):x in rtb] then
+		rtb[#rtb+1]:=tb[i];
+		dd[co]:=i;
+		co:=co+1;
+	end if;
+end for;
+
+rho:=[&+GaloisOrbit(x):x in rtb];
+e:=[&+[elt<A|(rtb[i][1]/#G)*rho[i](x^-1),x>:x in G] : i in [1..#rtb]];
+c:=[Coefficients(x):x in e];
+b:=Basis(A);
+UU:=MatrixAlgebra(Rationals(),n);
+buu:=[G!x: x in b];
+ew:=[&+[UU!(c[j][i]*UU!buu[i]):i in [1.. #G]]:j in [1..#rtb]];
+r:=[Rank(x):x in ew];
+ewt:=[Transpose(x):x in ew];
+j:=1;
+ddd:=[];
+
+for i in [1..#r] do
+	if r[i] ne 0 then
+		ddd[j]:=i;
+		j:=j+1;
+	end if;
+end for;
+
+ewtf:=[ewt[i]: i in ddd];
+r2:=[Floor(r[x]/2):x in ddd];
+dds:=[dd[x]:x in ddd];
+gr:=[rtb[x][1]:x in ddd];
+schur:=[SchurIndex(rtb[x]):x in ddd];
+dimB:=[r2[i]*schur[i]/gr[i]:i in [1..#r2]];
+
+form:=recformat<NFactGen:RngIntElt,dimA:SeqEnum,dimB:SeqEnum,Tb:SeqEnum,NrRepr:SeqEnum,GrRepr:SeqEnum,Idemp:SeqEnum,IdxSchurRep:SeqEnum>;
+
+print "\n";
+print "You got the following information:\n";
+print "NFactGen: Amount of isotypical component in a generic GAD for this G, \n";
+print "dimA: Dimensions of the non-vanishing isotypical factors,\n";
+print "dimB: Dimensions of the primitive factors (in each isotypical component),\n";
+print "Tb: Character Table of G,\n";
+print "NrRepr: Number in Tb corresponding to each non-vanishing isotypical component,\n";
+print "GrRepr: Degree of the complex irreducible representation corresponding to the non-vanishing components,\n";
+print "Idemp: Central idempotents in Q[G], represented in the symplectic basis of A,\n";
+print "IdxSchurRep: Schur index of the cpx. irr. Rep. with non-vanishing isotypical factor, \n";
+print "\n";
+
+return rec<form|NFactGen:=co-1,dimA:=r2,dimB:=dimB,Tb:=tb,NrRepr:=dds,GrRepr:=gr,Idemp:=ewtf,IdxSchurRep:=schur>;
+
+end function;
+
+
+
+ActionGSubvariety:=function(L,e) //L list of symplectic generators of G, e an idempotent represented using a symplectic basis.
+
+BN,Jind:=InducedPolarization(e);
+Lchica:= RestrictedRepresentation(L,BN);
+fis:=recformat<bN:ModMatRngElt,Jind:AlgMatElt,LH:SeqEnum>;
+print "A=Im(e) being a G-subvariety. Output: bN: coordinates symplectic basis lattice of A, Jind: induced polarization on A, LH: action of G restricted to A";
+return rec<fis|bN:=BN,Jind:=Jind,LH:=Lchica>;
+
+end function;
+
+
+
+ActionGSubJacobian:=function(L,H) //L list of symplectic generators of G, H a subgroup of G (symplectic).
+
+
+pH:=PH(H);
+BN,JInd:=InducedPolarization(pH);
+Lchica:= RestrictedRepresentation(L,BN);
+fis:=recformat<ph:AlgMatElt,bN:ModMatRngElt,Jind:AlgMatElt,LH:SeqEnum>;
+print "A=f^*J(X/H) being a G-subvariety. Output: ph:Idempotent for A, bN: coordinates symplectic basis lattice of A, Jind: induced polarization on A, LH: action of G restricted to A";
+return rec<fis|ph:=pH,bN:=BN,Jind:=JInd,LH:=Lchica>;
+
+end function;
+
+
+PH:=function(H)//H is expected to be a symplectic subgroup
+
+nH:=NumberOfRows(Identity(H));
+nH2:=Floor(nH/2);
+U:=MatrixAlgebra(Rationals(),nH);
+ph:=1/(#H)*(&+[U!x:x in H]);
+phT:=Transpose(ph);
+
+return phT;
+end function;
+
+InducedPolarization:=function(e) // idempotent represented symplectic
+
+nH:=NumberOfRows(e);
+nH2:=Floor(nH/2);
+B:=BasisMatrix(PureLattice(Lattice(e)));
+
+Jz:=FormSimplCan(nH2);
+Pola:=B*Jz*Transpose(B);
+Jind,P:=FrobeniusFormAlternating(MatrixAlgebra(Integers(),Rank(Pola))!Pola);
+bN:=P*B;
+
+return bN, Jind;
+end function;
+
+
+FormSimplCan:=function(N)
+
+Jz:=VerticalJoin(HorizontalJoin(ZeroMatrix(Integers(),N,N),IdentityMatrix(Integers(),N)),HorizontalJoin(-IdentityMatrix(Integers(),N),ZeroMatrix(Integers(),N,N)));
+return Jz;
+
+end function;
+
+RestrictedRepresentation:=function(L,BN) //L is expected to be a symplectic set of generators for G and BN a symplectic basis for a G-subvariety
+
+Lrho:=[x*Transpose(BN): x in L];
+Lth:=[Solution(BN,Transpose(x)): x in Lrho];
+Lch:=[MatrixAlgebra(Rationals(),Rank(BN))!x : x in Lth];
+Lcht:=[Transpose(x): x in Lch];
+
+return Lcht;
+end function; 
