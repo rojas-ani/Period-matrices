@@ -1,6 +1,8 @@
 # Period-matrices
-Magma code for Period matrices for Abelian varieties
-* Grupo800-980.mgm. Contains the symplectic representation for G(800,980) on genus 101 with signature (0;8,8,2). Obtained with polyNoZ.m in https://github.com/rojas-ani/magma-routines. **(Corresponds to the group in the application on Section 7)**
+Magma code for the article "Decomposing abelian varieties into simple factors: algorithms and applications"
+(i.e., to compute Period matrices for Abelian varieties)
+**Work in progress: still making improvements in the presentation of the topics**
+* Grupo800-980.mgm. Contains the symplectic representation for G(800,980) on genus 101 with signature (0;8,8,2). Obtained with polyNoZ.m in https://github.com/rojas-ani/magma-routines. **(Corresponds to the group in the application on Section 6)**
 * Outputs: 
   - a, b: Symplectic representation of the generators of G(800,980) of order 8 (corresponding to elements fixing points). The element of order 2 is ab.
   - G: The image of G(800,980) in Sp(202,Z)
@@ -15,7 +17,7 @@ Magma code for Period matrices for Abelian varieties
   - IsotypicalFactor(G,tb,rep): Input: G (symplectic), tb (character table of G), rep (the number of the representation whose isotypical component you want to study). The output is a record with the dimension of the isotypical component corresponding to that complex irreducible representation, the dimension of the primitive factor (in GAD), the central idempotent, the Schur index. **(Corresponds to Algorithm 3.1)**
   - Subvariety(p,Av); Input a endomorphism p represented in the symplectic basis of the ambient variety A, a record Av containing the information as in the output of IsotypicalFactorAll. **(Corresponds to Algorithm 3.1)**
 
-**Example** Section 7: A genus 101 curve with completely decomposable Jacobian. The group G(800,980) is acting on a curve X of genus 101 with signature (0;8,8,2). The corresponding Jacobian variety JX  has *Group algebra decomposition* (GAD): $S\times E_1\times E_2^2\times E_3^8\times \dots\times E_{14}^8$, where $E_j$ is an alliptic curve, and $S$ an abelian surface. Let H be the unique abelian subgroup of order 100. $S$ is isogenous to $Im(p_H)$. We compute the induced polarization (JH'Jind), the restricted action (JH'LH), and the Riemann matrix of $S$ as follows:  
+**Example** Section 6: A genus 101 curve with completely decomposable Jacobian. The group G(800,980) is acting on a curve X of genus 101 with signature (0;8,8,2). The corresponding Jacobian variety JX  has *Group algebra decomposition* (GAD): $S\times E_1\times E_2^2\times E_3^8\times \dots\times E_{14}^8$, where $E_j$ is an alliptic curve, and $S$ an abelian surface. Let H be the unique abelian subgroup of order 100. $S$ is isogenous to $Im(p_H)$. We compute the induced polarization (JH'Jind), the restricted action (JH'LH), and the Riemann matrix of $S$ as follows:  
 > load "Grupo800-980.mgm";  
 > load "ActionGSubvariety.mgm";  
 > JH:=ActionGSubJacobian([a,b],H);  
@@ -27,7 +29,7 @@ Magma code for Period matrices for Abelian varieties
   - a9828, b9828: Symplectic representation of the generators of G(98,28) of order 24 and 4 respectively (corresponding to elements fixing points). The element of order 2 is their product a9828 $\cdot$ b9828.
   - G9828: The image of G(98,28) in Sp(22,Z)
 
-**Example** Section 8: A genus 11 curve with completely decomposable Jacobian of CM type. The group G(98,28) is acting on X of genus 11 with signature (0;24,4,2). The GAD of the corresponding Jacobian variety JX is $E_1\times E_2^2\times E_3^2\times E_4^2\times S^2$, where $E_j$ is an elliptic curve and $S$ an abelian surface. The goal is to determine the $\tau$ (hence the lattice) for each $E_j$ and the period matrix for $S$. Firstly, we have computed the symplectic representation for the action of $G$ on $X$ using polyDZ.m, so here we begin by uploading its output. Then, we proceed as shown below.  
+**Example** Section 7: A genus 11 curve with completely decomposable Jacobian of CM type. The group G(98,28) is acting on X of genus 11 with signature (0;24,4,2). The GAD of the corresponding Jacobian variety JX is $E_1\times E_2^2\times E_3^2\times E_4^2\times S^2$, where $E_j$ is an elliptic curve and $S$ an abelian surface. The goal is to determine the $\tau$ (hence the lattice) for each $E_j$ and the period matrix for $S$. Firstly, we have computed the symplectic representation for the action of $G$ on $X$ using polyDZ.m, so here we begin by uploading its output. Then, we proceed as shown below.  
 > load "Grupo98-28.mgm";  
 > IdentifyGroup(G9828);  
 > load "ActionGSubvariety.mgm";  
